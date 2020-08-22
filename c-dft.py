@@ -28,13 +28,19 @@ beta = 1 / (Na*kb*T) # Boltzmann factor, KJ / mol
 delta = np.sqrt(beta*(plank_constant**2)/(2*np.pi*atom_mass)) #
 chem_potential = np.log(delta**3 * bulk_density)/beta # 
 
-
+#is used in the analytical solution
+a_distance_v_density = {}
+#is used in the numerical aproximation
 helmoltz_v_density = {} #will hold the total energy per density as key and the calculated density as value
 distance_v_density = {} # will hold all the disctances as keys and the densities (the ones that lowered the total energy)
 for i in range(len(distances)-1):
     distance = distances[i] # get a distance from the list of distances
     ext_p = lenard_jones(distance) # define an external potential here
     
+    #analitical solution
+    a_distance_v_density[distance] = bulk_density * np.exp(-beta*ext_p)
+
+    #Numerical aproximation
     # calculate the total energy for every density in the list
     for density in densities:
          
@@ -42,7 +48,7 @@ for i in range(len(distances)-1):
         helmoltz_v_density[e_tot] = density
     #search for the minimum total energy and added as a value of the given distance
     distance_v_density[distance] = helmoltz_v_density[min(helmoltz_v_density)]
-    print(distance,distance_v_density[distance]) #simple output
+    print(f"{distance},{distance_v_density[distance]},{a_distance_v_density[distance]}") #simple output
     helmoltz_v_density = {} # clean the dictionary so that old data doesn't interfere
 
 
